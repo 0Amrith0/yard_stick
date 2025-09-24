@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
 app.use(cors({ origin: "http://localhost:6050", credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
- 
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
@@ -32,13 +32,15 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/tenants", tenantRoutes)
 
-app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
-});
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+  });
+}
 
-app.listen(PORT, async() => {
-    await connectDB();
-    console.log(`Server running on PORT: ${PORT}`)
+app.listen(PORT, async () => {
+  await connectDB();
+  console.log(`Server running on PORT: ${PORT}`)
 })
